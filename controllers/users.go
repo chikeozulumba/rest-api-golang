@@ -54,6 +54,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	repo := crud.NewRepositoryUsersCRUD(db)
 	func (usersRepository repository.UserRepository) {
+		user.Prepare()
+		if err := user.Validate("save"); err != nil {
+			responses.ERROR(w, http.StatusBadRequest, err)
+			return
+		}
 		user, err = usersRepository.Save(user)
 		if err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
@@ -75,7 +80,6 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusBadRequest, errors.New("parameter supplied is of invalid format"))
 		return
 	}
-	//responses.JSON(w, http.StatusCreated, userId)
 	db, dbError := database.Connect()
 	if dbError != nil {
 		responses.ERROR(w, http.StatusInternalServerError, dbError)
@@ -96,6 +100,9 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userId, err := mux.Vars(r)["id"]
 	newUserId , newUserIdFormatError := strconv.ParseUint(string(userId), 10, 32)
+	user := models.User{}
+	_ = json.NewDecoder(r.Body).Decode(&user)
+
 	if err != true {
 		responses.ERROR(w, http.StatusBadRequest, errors.New("user id not supplied in the request"))
 		return
@@ -104,7 +111,6 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusBadRequest, errors.New("parameter supplied is of invalid format"))
 		return
 	}
-	//responses.JSON(w, http.StatusCreated, userId)
 	db, dbError := database.Connect()
 	if dbError != nil {
 		responses.ERROR(w, http.StatusInternalServerError, dbError)
@@ -112,7 +118,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	repo := crud.NewRepositoryUsersCRUD(db)
 	func (usersRepository repository.UserRepository) {
-		rows, repoError := usersRepository.Update(uint32(newUserId))
+		rows, repoError := usersRepository.Update(uint32(newUserId), user)
 		if repoError != nil {
 			responses.ERROR(w, http.StatusNotFound, repoError)
 			return

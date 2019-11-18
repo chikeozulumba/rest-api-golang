@@ -78,9 +78,8 @@ func (r *repositoryUsersCRUD) FindById(uid uint32) (models.User, error) {
 	return user, err
 }
 
-func (r *repositoryUsersCRUD) Update(uid uint32) (int64, error) {
+func (r *repositoryUsersCRUD) Update(uid uint32, user models.User) (int64, error) {
 	var rs *gorm.DB
-	var user models.User
 	done := make(chan bool)
 	go func(ch chan<- bool) {
 		defer close(ch)

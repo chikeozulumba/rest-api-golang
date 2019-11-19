@@ -11,6 +11,7 @@ import (
 var (
 	PORT = 0
 	DB_URL string
+	SECRET_KEY []byte
 )
 
 func LoadENV() {
@@ -36,8 +37,8 @@ func Load() {
 	var err error
 	PORT, err = strconv.Atoi(os.Getenv("PORT"))
 	if err != nil {
-		log.Println(err)
 		PORT = 9000
 	}
+	SECRET_KEY = []byte(os.Getenv("SECRET_KEY"))
 }
 

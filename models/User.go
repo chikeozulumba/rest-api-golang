@@ -46,9 +46,22 @@ func (u *User) Validate(action string) error {
 		if u.Email == "" {
 			return errors.New("email is required")
 		}
-
 		if err := checkmail.ValidateFormat(u.Email); err != nil {
 			return err
+		}
+		if u.Password == "" {
+			return errors.New("password is required")
+		}
+		return nil
+	case "login":
+		if u.Email == "" {
+			return errors.New("email is required")
+		}
+		if err := checkmail.ValidateFormat(u.Email); err != nil {
+			return errors.New("invalid email format")
+		}
+		if u.Password == "" {
+			return errors.New("password is required")
 		}
 		return nil
 	default:
@@ -60,6 +73,9 @@ func (u *User) Validate(action string) error {
 		}
 		if err := checkmail.ValidateFormat(u.Email); err != nil {
 			return errors.New("invalid email format")
+		}
+		if u.Password == "" {
+			return errors.New("password is required")
 		}
 		return nil
 	}

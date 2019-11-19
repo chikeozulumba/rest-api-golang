@@ -120,12 +120,12 @@ func (r *repositoryPostsCRUD) Update(pid uint64, post models.Post) (int64, error
 	return 0, errors.New("an error unexpectedly occurred")
 }
 
-func (r *repositoryPostsCRUD) DeletePost(pid uint64) (int64, error) {
+func (r *repositoryPostsCRUD) DeletePost(pid uint64, uid uint32) (int64, error) {
 	var rs *gorm.DB
 	done := make(chan bool)
 	go func(ch chan<- bool) {
 		defer close(ch)
-		rs = r.db.Debug().Model(&models.Post{}).Where("id = ?", pid).Take(&models.Post{}).Delete(&models.Post{})
+		rs = r.db.Debug().Model(&models.Post{}).Where("id = ? and author_id = ?", pid, uid).Take(&models.Post{}).Delete(&models.Post{})
 		ch <- true
 		return
 	}(done)

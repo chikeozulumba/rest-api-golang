@@ -7,6 +7,6 @@ import (
 
 func NEW() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
-	routes.SetupRoutesWithMiddleware(r)
+	routes.SetupRoutesWithAuthenticationMiddleware(r)
 	return routes.SetupRoutes(r)
 }
